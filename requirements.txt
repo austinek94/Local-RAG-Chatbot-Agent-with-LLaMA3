@@ -5,3 +5,4 @@ langgraph
 bs4
 tiktoken
 gpt4all-j
+gpt4all
