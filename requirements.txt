@@ -4,5 +4,4 @@ langchain
 langgraph
 bs4
 tiktoken
-gpt4all
-GLIBC_2.32
+gpt4all-j
