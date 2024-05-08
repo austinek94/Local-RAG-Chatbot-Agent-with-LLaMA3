@@ -5,4 +5,3 @@ langgraph
 bs4
 tiktoken
 gpt4all
-GLIBC >= 2.32
