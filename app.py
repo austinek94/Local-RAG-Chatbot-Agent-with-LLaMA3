@@ -14,7 +14,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 
 from langgraph.graph import END, StateGraph
 from pprint import pprint
-
+from dotenv import find_dotenv, load_dotenv
 import streamlit as st
 
 ### LLM
@@ -23,14 +23,21 @@ local_llm = "llama3"
 
 ### Index
 urls = [
-    "https://laminarcopilot.com/",
-    "https://www.linkedin.com/company/laminar-copilot/about/",
-    "https://www.linkedin.com/company/laminar-logistics/",
-    "https://www.laminarlogistics.com/",
+    "https://aws.amazon.com/what-is/retrieval-augmented-generation/#:~:text=Retrieval%2DAugmented%20Generation%20(RAG),sources%20before%20generating%20a%20response.",
+    "https://blogs.nvidia.com/blog/what-is-retrieval-augmented-generation/",
+    "https://research.ibm.com/blog/retrieval-augmented-generation-RAG",
+    "https://www.databricks.com/glossary/retrieval-augmented-generation-rag",
+    "https://www.cohesity.com/glossary/retrieval-augmented-generation-rag/",
+    "https://www.datacamp.com/blog/what-is-retrieval-augmented-generation-rag",
+    "https://qdrant.tech/articles/what-is-rag-in-ai/",
+    "https://www.oracle.com/artificial-intelligence/generative-ai/retrieval-augmented-generation-rag/",
+    
 ]
 
 docs = [WebBaseLoader(url).load() for url in urls]
 docs_list = [item for sublist in docs for item in sublist]
+
+#print(docs_list)
 
 text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
     chunk_size=250, chunk_overlap=0
@@ -48,6 +55,7 @@ retriever = vectorstore.as_retriever()
 ### Retrieval Grader
 
 # LLM
+
 llm = ChatOllama(model=local_llm, format="json", temperature=0)
 
 prompt = PromptTemplate(
@@ -64,10 +72,10 @@ prompt = PromptTemplate(
 )
 
 retrieval_grader = prompt | llm | JsonOutputParser()
-question = "data science"
+question = "Retrieval-Augmented Generation"
 docs = retriever.invoke(question)
 doc_txt = docs[1].page_content
-print(retrieval_grader.invoke({"question": question, "document": doc_txt}))
+retrieval_grader.invoke({"question": question, "document": doc_txt})
 
 ### Generate
 
@@ -86,6 +94,7 @@ llm = ChatOllama(model=local_llm, temperature=0)
 
 
 # Post-processing
+
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
@@ -94,10 +103,10 @@ def format_docs(docs):
 rag_chain = prompt | llm | StrOutputParser()
 
 # Run
-question = "data science"
+question = "Retrieval-Augmented Generation"
 docs = retriever.invoke(question)
 generation = rag_chain.invoke({"context": docs, "question": question})
-print(generation)
+#print(generation)
 
 ### Hallucination Grader
 
@@ -157,13 +166,15 @@ prompt = PromptTemplate(
 )
 
 question_router = prompt | llm | JsonOutputParser()
-question = "data science"
+question = "Retrieval-Augmented Generation"
 docs = retriever.get_relevant_documents(question)
 doc_txt = docs[1].page_content
-print(question_router.invoke({"question": question}))
+question_router.invoke({"question": question})
 
 ### Search
+load_dotenv(find_dotenv())
 
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 web_search_tool = TavilySearchResults(k=3)
 
@@ -432,27 +443,41 @@ workflow.add_conditional_edges(
     },
 )
 
-def main():
-    st.title('Laminar RAG')
-    #st.write('enter urls')
-    
-    #urls = st.text_area('enter urls')
-    questions = st.text_input('Question')
-    
-    if st.button ('Submit'):
-        with st.spinner('Processing'):
-            app = workflow.compile()
+if 'chat_history' not in st.session_state:
+    st.session_state['chat_history'] = []
 
+
+    
+def main():
+    st.title('All About RAG')
+    questions = st.chat_input('Question')
+    
+    if questions:
+
+        st.session_state.chat_history.append(questions)
+        for i in range(len(st.session_state['chat_history'])):
+            role = ''
+            if i % 2 == 0:
+                role = 'user'
+            else:
+                role = 'assistant'
+            with st.chat_message(role):
+                st.write(st.session_state['chat_history'][i])
+            
+        with st.spinner(text="In progress..."):
+            app = workflow.compile()
             inputs = {"question": questions}
             for output in app.stream(inputs):
                 for key, value in output.items():
                     pprint(f"Finished running: {key}:")
             pprint(value["generation"])
-            answer = value["generation"]
-            st.text_area('Answer',value = answer, height = 300, disabled=False)
-            
+            answer = value["generation"] 
+            st.session_state.chat_history.append(answer)
+            with st.chat_message('assistant'):
+                st.write(answer)
+
+
 if __name__ == '__main__':
     main()
 
 # py -m streamlit run app.py
-# What is Laminar Logistics?
