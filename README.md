@@ -1,4 +1,4 @@
-# Local RAG agent with LLaMA3
+# Local RAG Chatbot Agent with LLaMA3
 
 3 ideas from paper RAG papers into a local RAG agent:
 
