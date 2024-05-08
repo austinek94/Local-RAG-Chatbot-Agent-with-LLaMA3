@@ -164,7 +164,6 @@ print(question_router.invoke({"question": question}))
 
 ### Search
 
-TAVILY_API_KEY='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'
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 web_search_tool = TavilySearchResults(k=3)
 
