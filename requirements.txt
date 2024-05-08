@@ -6,3 +6,5 @@ bs4
 tiktoken
 gpt4all-j
 gpt4all
+streamlit_option_menu
+python
