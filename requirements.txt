@@ -8,4 +8,4 @@ gpt4all-j
 gpt4all
 streamlit_option_menu
 python
-GLIBC>=2.32
+GLIBC >= 2.32
