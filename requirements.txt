@@ -6,4 +6,3 @@ bs4
 tiktoken
 gpt4all
 libc6
-libstdc++6
