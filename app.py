@@ -14,7 +14,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 
 from langgraph.graph import END, StateGraph
 from pprint import pprint
-from dotenv import find_dotenv, load_dotenv
+#from dotenv import find_dotenv, load_dotenv
 import streamlit as st
 
 ### LLM
@@ -172,9 +172,9 @@ doc_txt = docs[1].page_content
 question_router.invoke({"question": question})
 
 ### Search
-load_dotenv(find_dotenv())
+#load_dotenv(find_dotenv())
 
-TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
+#TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 web_search_tool = TavilySearchResults(k=3)
 
