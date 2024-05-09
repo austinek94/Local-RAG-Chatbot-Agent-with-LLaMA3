@@ -1,1 +1,2 @@
+libc6
 libstdc++6
