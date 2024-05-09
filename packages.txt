@@ -1,2 +1,4 @@
 libc6
 libstdc++6
+dpkg
+libc6 libc-bin
